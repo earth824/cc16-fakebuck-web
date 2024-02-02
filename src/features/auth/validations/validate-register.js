@@ -1,4 +1,5 @@
 import Joi from 'joi';
+import validate from '../../../utils/validate';
 
 const registerSchema = Joi.object({
   firstName: Joi.string().required().trim(),
@@ -13,4 +14,5 @@ const registerSchema = Joi.object({
   confirmPassword: Joi.string().valid(Joi.ref('password')).required()
 });
 
-export default registerSchema;
+const validateRegister = input => validate(registerSchema)(input);
+export default validateRegister;

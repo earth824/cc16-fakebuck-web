@@ -2,19 +2,26 @@ import { useState } from 'react';
 import Button from '../../../components/Button';
 import Input from '../../../components/Input';
 import registerSchema from '../validations/validate-register';
+import validateRegister from '../validations/validate-register';
+
+const initial = {
+  firstName: '',
+  lastName: '',
+  emailOrMobile: '',
+  password: '',
+  confirmPassword: ''
+};
 
 export default function RegisterForm({ onSuccess }) {
-  const [input, setInput] = useState({});
-  const [error, setError] = useState({
-    firstName: 'Please fill your first name'
-  });
+  const [input, setInput] = useState(initial);
+  const [error, setError] = useState({});
 
   const handleFormSubmit = e => {
     e.preventDefault();
-    // const { value, error } = registerSchema.validate(input, {
-    //   abortEarly: false
-    // });
-    // console.dir(error);
+    const validateError = validateRegister(input);
+    if (validateError) {
+      return setError(validateError);
+    }
 
     // onSuccess();
   };
@@ -32,10 +39,8 @@ export default function RegisterForm({ onSuccess }) {
             value={input.firstName}
             name="firstName"
             onChange={handleChangeInput}
+            errorMessage={error.firstName}
           />
-          {/* {error.firstName ? (
-            <small className="text-red-500">{error.firstName}</small>
-          ) : null} */}
         </div>
         <div>
           <Input
@@ -43,6 +48,7 @@ export default function RegisterForm({ onSuccess }) {
             value={input.lastName}
             name="lastName"
             onChange={handleChangeInput}
+            errorMessage={error.lastName}
           />
         </div>
         <div className="col-span-full">
@@ -51,6 +57,7 @@ export default function RegisterForm({ onSuccess }) {
             value={input.emailOrMobile}
             name="emailOrMobile"
             onChange={handleChangeInput}
+            errorMessage={error.emailOrMobile}
           />
         </div>
         <div className="col-span-full">
@@ -60,6 +67,7 @@ export default function RegisterForm({ onSuccess }) {
             name="password"
             onChange={handleChangeInput}
             type="password"
+            errorMessage={error.password}
           />
         </div>
         <div className="col-span-full">
@@ -69,6 +77,7 @@ export default function RegisterForm({ onSuccess }) {
             name="confirmPassword"
             onChange={handleChangeInput}
             type="password"
+            errorMessage={error.confirmPassword}
           />
         </div>
         <div className="col-span-full text-center">
