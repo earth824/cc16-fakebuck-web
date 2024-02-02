@@ -23,7 +23,7 @@ export default function RegisterForm({ onSuccess }) {
       return setError(validateError);
     }
 
-    // onSuccess();
+    onSuccess();
   };
 
   const handleChangeInput = e => {
