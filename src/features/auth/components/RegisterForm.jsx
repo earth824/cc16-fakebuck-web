@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import Button from '../../../components/Button';
 import Input from '../../../components/Input';
 import validateRegister from '../validations/validate-register';
@@ -27,11 +28,13 @@ export default function RegisterForm({ onSuccess }) {
       }
 
       await register(input);
+      toast.success('register successfully');
       onSuccess();
     } catch (err) {
       if (err.response?.data.message === 'EMAIL_MOBILE_IN_USE') {
-        setError({ emailOrMobile: 'already in use' });
+        return setError({ emailOrMobile: 'already in use' });
       }
+      toast.error(err.response?.data.message);
     }
   };
 
