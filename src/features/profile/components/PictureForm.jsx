@@ -1,5 +1,4 @@
 import { useRef } from 'react';
-import Avatar from '../../../components/Avatar';
 import FormButton from './FormButton';
 import { useState } from 'react';
 
@@ -38,11 +37,8 @@ export default function PictureForm({ title, children }) {
           <FormButton onClick={() => fileEl.current.click()}>Edit</FormButton>
         </div>
       </div>
-      <div className="flex justify-center pb-4">
-        <Avatar
-          size={10.5}
-          src={file ? URL.createObjectURL(file) : undefined}
-        />
+      <div className="flex justify-center pb-4 px-4">
+        {children(file ? URL.createObjectURL(file) : undefined)}
       </div>
     </div>
   );
