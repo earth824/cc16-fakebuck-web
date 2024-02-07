@@ -1,13 +1,28 @@
 import { useRef } from 'react';
 import FormButton from './FormButton';
 import { useState } from 'react';
+import Spinner from '../../../components/Spinner';
+import { toast } from 'react-toastify';
 
-export default function PictureForm({ title, children }) {
+export default function PictureForm({ title, children, initialSrc, onSave }) {
   const fileEl = useRef(null);
   const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleClickSave = async () => {
+    try {
+      setLoading(true);
+      await onSave(file);
+    } catch (err) {
+      toast.error(err.response?.data.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div>
+      {loading && <Spinner />}
       <input
         type="file"
         className="hidden"
@@ -23,7 +38,7 @@ export default function PictureForm({ title, children }) {
         <div>
           {file && (
             <>
-              <FormButton>Save</FormButton>
+              <FormButton onClick={handleClickSave}>Save</FormButton>
               <FormButton
                 onClick={() => {
                   setFile(null);
@@ -38,7 +53,7 @@ export default function PictureForm({ title, children }) {
         </div>
       </div>
       <div className="flex justify-center pb-4 px-4">
-        {children(file ? URL.createObjectURL(file) : undefined)}
+        {children(file ? URL.createObjectURL(file) : initialSrc)}
       </div>
     </div>
   );
