@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import Avatar from '../../../components/Avatar';
 import useProfile from '../hooks/use-profile';
 
@@ -16,7 +17,9 @@ export default function ProfileInfo() {
       </span>
       <div className="flex -space-x-2">
         {profileUserFriends.map(el => (
-          <Avatar key={el.id} size={2} src={el.profileImage} />
+          <Link key={el.id} to={`/profile/${el.id}`}>
+            <Avatar size={2} src={el.profileImage} />
+          </Link>
         ))}
       </div>
     </div>

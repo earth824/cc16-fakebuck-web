@@ -1,43 +1,81 @@
 import { useState } from 'react';
 import { createContext } from 'react';
+import * as userApi from '../../../api/user';
+import { useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import * as relationshipApi from '../../../api/relationship';
+import { RELATIONSHIP_TO_AUTH_USER } from '../../../constants';
+import useAuth from '../../../hooks/use-auth';
 
 export const ProfileContext = createContext();
 
 export default function ProfileContextProvider({ children }) {
-  const [profileUser, setProfileUser] = useState({
-    id: 5,
-    firstName: 'Jim',
-    lastName: 'Ryan',
-    profileImage:
-      'https://images.pexels.com/photos/105808/pexels-photo-105808.jpeg?auto=compress&cs=tinysrgb&w=600',
-    coverImage:
-      'https://images.pexels.com/photos/1062249/pexels-photo-1062249.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1'
-  });
+  const [profileUser, setProfileUser] = useState({});
+  const [profileUserFriends, setProfileUserFriends] = useState([]);
+  const [relationshipToAuthUser, setRelationshipToAuthUser] = useState('');
 
-  const [profileUserFriends, setProfileUserFriends] = useState([
-    {
-      id: 6,
-      firstName: 'Jo',
-      lastName: 'Nemeth',
-      profileImage:
-        'https://images.pexels.com/photos/670741/pexels-photo-670741.jpeg?auto=compress&cs=tinysrgb&w=600',
-      coverImage: null
-    },
-    {
-      id: 7,
-      firstName: 'Bob',
-      lastName: 'Smith',
-      profileImage:
-        'https://images.pexels.com/photos/5967959/pexels-photo-5967959.jpeg?auto=compress&cs=tinysrgb&w=600',
-      coverImage: null
+  const { userId } = useParams();
+  const { authUser } = useAuth();
+
+  const requestFriend = async () => {
+    await relationshipApi.requestFriend(userId);
+    setRelationshipToAuthUser(RELATIONSHIP_TO_AUTH_USER.RECEIVER);
+  };
+
+  const confirmRequest = async () => {
+    await relationshipApi.confirmRequest(userId);
+    setRelationshipToAuthUser(RELATIONSHIP_TO_AUTH_USER.FRIEND);
+    setProfileUserFriends(prev => [...prev, authUser]);
+  };
+
+  const rejectRequest = async () => {
+    await relationshipApi.rejectRequest(userId);
+    setRelationshipToAuthUser(RELATIONSHIP_TO_AUTH_USER.UNKNOWN);
+  };
+
+  const cancelRequest = async () => {
+    await relationshipApi.cancelRequest(userId);
+    setRelationshipToAuthUser(RELATIONSHIP_TO_AUTH_USER.UNKNOWN);
+  };
+
+  const unfriend = async () => {
+    await relationshipApi.unfriend(userId);
+    setRelationshipToAuthUser(RELATIONSHIP_TO_AUTH_USER.UNKNOWN);
+    setProfileUserFriends(prev => prev.filter(el => el.id !== authUser.id));
+  };
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const res = await userApi.getTargetUserProfile(userId);
+        setProfileUser(res.data.profileUser);
+        setProfileUserFriends(res.data.profileUserFriends);
+        setRelationshipToAuthUser(res.data.relationshipToAuthUser);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    fetchProfile();
+  }, [userId]);
+
+  useEffect(() => {
+    if (+userId === authUser.id) {
+      setProfileUser(authUser);
     }
-  ]);
-
-  const [relationshipToAuthUser, setRelationshipToAuthUser] = useState('ME');
+  }, [authUser, userId]);
 
   return (
     <ProfileContext.Provider
-      value={{ profileUser, profileUserFriends, relationshipToAuthUser }}
+      value={{
+        profileUser,
+        profileUserFriends,
+        relationshipToAuthUser,
+        requestFriend,
+        confirmRequest,
+        rejectRequest,
+        cancelRequest,
+        unfriend
+      }}
     >
       {children}
     </ProfileContext.Provider>
