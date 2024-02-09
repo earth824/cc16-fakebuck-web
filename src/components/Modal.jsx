@@ -3,9 +3,9 @@ export default function Modal({ title, children, onClose, width }) {
     <>
       <div className="fixed bg-white inset-0 opacity-70"></div>
       <div className="fixed inset-0">
-        <div className="flex items-center justify-center min-h-full">
+        <div className="flex items-center justify-center min-h-full py-8">
           <div
-            className="bg-white rounded-lg shadow-[0_0_15px_rgb(0,0,0,0.2)]"
+            className="bg-white rounded-lg shadow-[0_0_15px_rgb(0,0,0,0.2)] max-h-[calc(100vh-4rem)] flex flex-col"
             style={{ width: `${width}rem` }}
           >
             <div className="border-b flex justify-between items-center p-4">
@@ -13,7 +13,7 @@ export default function Modal({ title, children, onClose, width }) {
               <h5 className="text-2xl font-semibold">{title}</h5>
               <button onClick={onClose}>&#10005;</button>
             </div>
-            <div>{children}</div>
+            <div className="overflow-auto">{children}</div>
           </div>
         </div>
       </div>

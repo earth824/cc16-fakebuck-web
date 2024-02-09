@@ -1,3 +1,12 @@
+import PostItem from './PostItem';
+
 export default function PostList() {
-  return <div>Post List</div>;
+  return (
+    <div className="flex flex-col gap-4">
+      <PostItem />
+      <PostItem />
+      <PostItem />
+      <PostItem />
+    </div>
+  );
 }
